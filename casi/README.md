@@ -1,16 +1,19 @@
-# casi
+# FlutterCASI
 
-A new Flutter project.
+A sample flutter mobile app to integrate [CASI](https://auth.devclub.in/) for authentication.
 
-## Getting Started
+## Implementation Details
 
-This project is a starting point for a Flutter application.
+### Classes
 
-A few resources to get you started if this is your first Flutter project:
+1. The class [`CasiLogin`](https://github.com/Harsh14901/FlutterCASI/blob/7d12d82bdf7b865a7649c46b7915317644224355/casi/lib/casi_user.dart#L33) is responsible for logging in a user through CASI. **Constructor Arguments** :
+    - `String clientId` : The client-id in the `config` file given to the client at the time of registration at CASI. For details on how to register visit [Register](https://auth.devclub.in/client/register)
+    - `String accessToken` : The client access-token in the `config` file given to the client at the time of registration at CASI.
+    - (Optional) `Function onSuccess`: The callback function when the user logs in successfully. [Signature](https://github.com/Harsh14901/FlutterCASI/blob/7d12d82bdf7b865a7649c46b7915317644224355/casi/lib/casi_user.dart#L45)
+    - (Optional) `Function onError`: The callback function when there is a error in logging in the user. [Signature](https://github.com/Harsh14901/FlutterCASI/blob/7d12d82bdf7b865a7649c46b7915317644224355/casi/lib/casi_user.dart#L46)
+    
+    Use the function [`CasiLogin.signIn`](https://github.com/Harsh14901/FlutterCASI/blob/7d12d82bdf7b865a7649c46b7915317644224355/casi/lib/casi_user.dart#L65) of the object to launch a web view that will allow the user to login through CASI.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+2. The class [`CasiUser`](https://github.com/Harsh14901/FlutterCASI/blob/7d12d82bdf7b865a7649c46b7915317644224355/casi/lib/casi_user.dart#L6) is the model class for user data that CASI returns after logging in.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
