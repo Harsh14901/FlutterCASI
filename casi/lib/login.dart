@@ -28,9 +28,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _signInButton() {
+    String clientId = '5f6b9904082bd177a3e82b9c';
+    String secret = '3mAXnsXtvuyz0u14sNUaUgDu8SvREgIh';
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: CasiUser().signIn,
+      onPressed: CasiLogin(clientId, secret,
+          onSuccess: (String token, CasiUser user) {
+            print(token);
+            print(user.email);
+          },
+          onError: (e) => print(e)).signIn,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
