@@ -9,18 +9,20 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              FlutterLogo(size: 150),
-              SizedBox(height: 50),
-              _signInButton(),
-            ],
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          color: Colors.white,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FlutterLogo(size: 150),
+                SizedBox(height: 50),
+                _signInButton(),
+              ],
+            ),
           ),
         ),
       ),
@@ -32,12 +34,31 @@ class _LoginPageState extends State<LoginPage> {
     String secret = '3mAXnsXtvuyz0u14sNUaUgDu8SvREgIh';
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed: CasiLogin(clientId, secret,
-          onSuccess: (String token, CasiUser user) {
-            print(token);
-            print(user.email);
-          },
-          onError: (e) => print(e)).signIn,
+      onPressed: CasiLogin(clientId, secret, onSuccess: (String token, CasiUser user) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(user),
+          ),
+        );
+        print(token);
+        print(user.email);
+      }, onError: (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('An Error Occured!'),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Try Again'),
+              )
+            ],
+          ),
+        );
+        print(e);
+      }).signIn,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
@@ -59,6 +80,37 @@ class _LoginPageState extends State<LoginPage> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  final CasiUser user;
+
+  const HomeScreen(
+    this.user, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('Welcome, ${user.username}', style: TextStyle(fontSize: 20)),
+              RaisedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Logout'),
+                color: Colors.red,
+                textColor: Colors.white,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -11,13 +11,14 @@ class CasiUser {
   String isverified;
   List<String> roles;
 
-  CasiUser(
-      {this.email,
-      this.firstname,
-      this.isverified,
-      this.lastname,
-      this.roles,
-      this.username});
+  CasiUser({
+    this.email,
+    this.firstname,
+    this.isverified,
+    this.lastname,
+    this.roles,
+    this.username,
+  });
 
   factory CasiUser.fromJson(Map<String, dynamic> user) {
     return CasiUser(
@@ -33,17 +34,15 @@ class CasiUser {
 class CasiLogin {
   String clientId;
   String secret;
-  String _serverUrl = "http://192.168.1.4:8000";
+  String _serverUrl = "http://192.168.1.106:8000";
   String _loginURL;
   String _token;
-  Function(String token, CasiUser user) _onSuccess =
-      (String token, CasiUser user) => {};
+  Function(String token, CasiUser user) _onSuccess = (String token, CasiUser user) => {};
   Function(Exception err) _onError = (Exception err) => {};
   Map<String, dynamic> _cookies;
 
   CasiLogin(String clientId, String accessToken,
-      {Function(String token, CasiUser user) onSuccess,
-      Function(Exception err) onError}) {
+      {Function(String token, CasiUser user) onSuccess, Function(Exception err) onError}) {
     this.clientId = clientId;
 
     this._onSuccess = onSuccess ?? _onSuccess;
