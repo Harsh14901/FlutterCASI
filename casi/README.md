@@ -27,4 +27,4 @@ dependencies:
 
 2. The class [`CasiUser`](https://github.com/Harsh14901/FlutterCASI/blob/7d12d82bdf7b865a7649c46b7915317644224355/casi/lib/casi_user.dart#L6) is the model class for user data that CASI returns after logging in.
 
-
+For a better understanding take a look at the [example](https://github.com/Harsh14901/FlutterCASI/blob/6cc0cfa44fe0fdac51bcdc9aa584a41f179d69e1/casi/lib/login.dart#L39)
