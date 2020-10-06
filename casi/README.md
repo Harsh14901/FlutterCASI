@@ -2,7 +2,18 @@
 
 A sample flutter mobile app to integrate [CASI](https://auth.devclub.in/) for authentication.
 
-## Implementation Details
+## Setup
+
+1. Register your client at [Register](https://auth.devclub.in/client/register) and obtain the `config` file.
+2. Copy the file `casi_user.dart` into your project and add the following dependencies to `pubspec.yaml`
+ ```
+dependencies:
+  flutter_webview_plugin: ^0.3.11
+  corsac_jwt: ^0.2.2
+  http: ^0.12.2
+```
+
+## Usage
 
 ### Classes
 
