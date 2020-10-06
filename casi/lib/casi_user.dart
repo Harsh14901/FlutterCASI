@@ -34,15 +34,17 @@ class CasiUser {
 class CasiLogin {
   String clientId;
   String secret;
-  String _serverUrl = "http://192.168.1.106:8000";
+  String _serverUrl = "https://auth.devclub.in";
   String _loginURL;
   String _token;
-  Function(String token, CasiUser user) _onSuccess = (String token, CasiUser user) => {};
-  Function(Exception err) _onError = (Exception err) => {};
+  Function(String token, CasiUser user) _onSuccess =
+      (String token, CasiUser user) => {};
+  Function(dynamic err) _onError = (dynamic err) => {};
   Map<String, dynamic> _cookies;
 
   CasiLogin(String clientId, String accessToken,
-      {Function(String token, CasiUser user) onSuccess, Function(Exception err) onError}) {
+      {Function(String token, CasiUser user) onSuccess,
+      Function(dynamic err) onError}) {
     this.clientId = clientId;
 
     this._onSuccess = onSuccess ?? _onSuccess;
@@ -67,6 +69,8 @@ class CasiLogin {
       print("URL CHANGED: $url");
 
       if (url.startsWith("${this._serverUrl}/auth/clientVerify?q=")) {
+        if (_token != null) return;
+        _token = 'mutex';
         try {
           _cookies = await webview.getCookies();
           _token = _cookies['"_token'].toString();
@@ -74,16 +78,19 @@ class CasiLogin {
           CasiUser user = await fetchUserDetails();
           this._onSuccess(_token, user);
         } catch (e) {
-          this._onError(e);
+          this._onError("Login Failed");
         }
         webview.close();
       }
     });
+    _token = null;
     await webview.launch(
       _loginURL,
       ignoreSSLErrors: true,
       clearCookies: true,
       clearCache: true,
+      userAgent:
+          'Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19',
     );
   }
 
