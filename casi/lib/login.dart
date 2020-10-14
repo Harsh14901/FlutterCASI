@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:casi/casi_user.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -30,37 +33,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _signInButton() {
-    String clientId = '5f7ca56f01cb380034260a02';
-    String secret =
-        'o8ggsY3EeNeCdl0U3izDF1LvR0cU33zopJeFHltapvle8bBChvzHT5miRN23o5v0';
     return OutlineButton(
       splashColor: Colors.grey,
-      onPressed:
-          CasiLogin(clientId, secret, onSuccess: (String token, CasiUser user) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(user),
-          ),
-        );
-        print(token);
-        print(user.email);
-      }, onError: (e) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('An Error Occured!'),
-            content: Text(e.toString()),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Try Again'),
-              )
-            ],
-          ),
-        );
-        print(e);
-      }).signIn,
+      onPressed: onPressed(context),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
       borderSide: BorderSide(color: Colors.grey),
@@ -106,7 +81,12 @@ class HomeScreen extends StatelessWidget {
             children: <Widget>[
               Text('Welcome, ${user.username}', style: TextStyle(fontSize: 20)),
               RaisedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.remove('token');
+                  Navigator.of(context).pop();
+                },
                 child: Text('Logout'),
                 color: Colors.red,
                 textColor: Colors.white,
@@ -117,4 +97,54 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Function onPressed(BuildContext context) {
+  return () async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String oldToken = prefs.getString('token');
+
+    String clientId = '5f7ca56f01cb380034260a02';
+    String secret =
+        'o8ggsY3EeNeCdl0U3izDF1LvR0cU33zopJeFHltapvle8bBChvzHT5miRN23o5v0';
+
+    void onLogin(CasiUser user) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(user),
+        ),
+      );
+    }
+
+    try {
+      CasiUser user = await CasiLogin.fromToken(oldToken).refreshToken(
+          onRefreshSuccess: (String newToken) {
+        print(newToken);
+        // prefs.setString('token', newToken);
+      });
+      onLogin(user);
+    } catch (e) {
+      await CasiLogin(clientId, secret,
+          onSuccess: (String token, CasiUser user) {
+        prefs.setString('token', token);
+        onLogin(user);
+      }, onError: (dynamic e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('An Error Occured!'),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Try Again'),
+              )
+            ],
+          ),
+        );
+        print(e);
+      }).signIn();
+    }
+  };
 }

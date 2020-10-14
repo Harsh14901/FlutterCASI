@@ -63,7 +63,13 @@ class CasiLogin {
         "${this._serverUrl}/user/login?serviceURL=${this._serverUrl}/auth/clientVerify?q=${Uri.encodeQueryComponent(this.secret)}";
   }
 
-  void signIn() async {
+  CasiLogin.fromToken(String token) {
+    this._token = token;
+  }
+
+  Future<void> signIn() async {
+    if (_loginURL == null)
+      throw Exception("No client ID and client secret found");
     final webview = new FlutterWebviewPlugin();
     webview.onUrlChanged.listen((url) async {
       print("URL CHANGED: $url");
@@ -100,6 +106,24 @@ class CasiLogin {
     });
     final jsonData = jsonDecode(response.body);
     if (response.statusCode == 200) {
+      return CasiUser.fromJson(jsonData['user']);
+    } else {
+      throw Exception(jsonData['msg']);
+    }
+  }
+
+  Future<CasiUser> refreshToken(
+      {String oldToken, Function(String token) onRefreshSuccess}) async {
+    if (oldToken == null && _token == null) throw Exception("No token found");
+    String toSendToken = oldToken ?? _token;
+
+    final response = await http.post(this._serverUrl + '/auth/refresh-token',
+        body: {'token': toSendToken});
+    final jsonData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      if (onRefreshSuccess != null) {
+        onRefreshSuccess(response.headers['set-cookie'].split(';')[0]);
+      }
       return CasiUser.fromJson(jsonData['user']);
     } else {
       throw Exception(jsonData['msg']);
