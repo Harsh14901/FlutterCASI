@@ -122,7 +122,8 @@ class CasiLogin {
     final jsonData = jsonDecode(response.body);
     if (response.statusCode == 200) {
       if (onRefreshSuccess != null) {
-        onRefreshSuccess(response.headers['set-cookie'].split(';')[0]);
+        onRefreshSuccess(
+            response.headers['set-cookie'].split(';')[0].split('=')[1]);
       }
       return CasiUser.fromJson(jsonData['user']);
     } else {

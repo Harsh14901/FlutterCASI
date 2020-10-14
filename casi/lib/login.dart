@@ -121,7 +121,7 @@ Function onPressed(BuildContext context) {
       CasiUser user = await CasiLogin.fromToken(oldToken).refreshToken(
           onRefreshSuccess: (String newToken) {
         print(newToken);
-        // prefs.setString('token', newToken);
+        prefs.setString('token', newToken);
       });
       onLogin(user);
     } catch (e) {
